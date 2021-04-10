@@ -2,7 +2,6 @@ import { memo, useEffect, useState, useRef } from "react"
 import Meyda from "meyda"
 import KNN from "ml-knn"
 
-let lastLoudness
 const LABEL_MAP = { alto: 0, bass: 1, sopran: 2, tenor: 3 }
 const RESULT_MAP = { 0: "alto", 1: "bass", 2: "sopran", 3: "tenor" }
 
@@ -24,7 +23,6 @@ const Predict = () => {
   const [mfccTotal, setMfccTotal] = useState([])
   const [file, setFile] = useState(null)
   const streamFileRef = useRef(null)
-  const inputRef = useRef(null)
   const [resultText, setResultText] = useState("")
 
   useEffect(() => {
@@ -83,10 +81,9 @@ const Predict = () => {
         audioContext: state.context,
         source: state.sourceStream,
         bufferSize: 512,
-        featureExtractors: ["mfcc", "loudness"],
+        featureExtractors: ["mfcc"],
         callback: (features) => {
           setMfccTotal((curr) => curr.concat([features.mfcc]))
-          lastLoudness = features.loudness
         },
       })
     )
@@ -94,7 +91,6 @@ const Predict = () => {
 
   const handlePredictFromFile = async () => {
     analyzer.stop()
-    lastLoudness = null
     let testingDataSource = await getMeanArray(mfccTotal)
     predict(testingDataSource)
     setMfccTotal([])
