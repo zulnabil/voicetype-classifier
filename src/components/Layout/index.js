@@ -121,7 +121,7 @@ function Layout({ children }) {
             <Icon>menu</Icon>
           </IconButton>
           <Typography variant="h6" noWrap>
-            Voice type classifier
+            Klasifikasi Jenis Suara
           </Typography>
         </Toolbar>
       </AppBar>

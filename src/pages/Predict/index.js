@@ -1,9 +1,11 @@
 import { memo, useEffect, useState, useRef } from "react"
+import Button from "@material-ui/core/Button"
+import Typography from "@material-ui/core/Typography"
 import Meyda from "meyda"
 import KNN from "ml-knn"
 
 const LABEL_MAP = { alto: 0, bass: 1, sopran: 2, tenor: 3 }
-const RESULT_MAP = { 0: "alto", 1: "bass", 2: "sopran", 3: "tenor" }
+const RESULT_MAP = { 0: "Alto", 1: "Bass", 2: "Sopran", 3: "Tenor" }
 
 function getMeanArray(arr) {
   let meanArr = arr[0].map((col, i) => {
@@ -72,7 +74,7 @@ const Predict = () => {
   }
 
   const handleExtractFeature = async () => {
-    setResultText("analyzing...")
+    setResultText("Sedang menganalisa...")
     setMfccTotal([])
     if (state.sourceStream)
       state.sourceStream.connect(state.context.destination)
@@ -108,23 +110,36 @@ const Predict = () => {
     const knn = new KNN(data, label)
     const result = knn.predict(dataTest)
     console.log(result)
-    setResultText(RESULT_MAP[result])
+    setResultText(`Jenis suara adalah "${RESULT_MAP[result]}"`)
   }
 
   return (
     <div>
-      <h1>Predict</h1>
-      <audio
-        ref={streamFileRef}
-        src={file}
-        controls
-        autoPlay
-        onPlay={() => analyzer.start()}
-        onEnded={handlePredictFromFile}
+      <h1>Klasifikasi</h1>
+      <input
+        id="contained-button-file"
+        type="file"
+        accept="audio/*"
+        onChange={handleInputFile}
+        style={{ display: "none" }}
       />
-      <input type="file" accept="audio/*" onChange={handleInputFile} />
-      <div>
-        <p>{resultText}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <label htmlFor="contained-button-file">
+          <Button variant="contained" color="primary" component="span">
+            Upload
+          </Button>
+        </label>
+        <audio
+          ref={streamFileRef}
+          src={file}
+          controls
+          autoPlay
+          onPlay={() => analyzer.start()}
+          onEnded={handlePredictFromFile}
+        />
+        <Typography variant="h6" gutterBottom>
+          {resultText}
+        </Typography>
       </div>
     </div>
   )
