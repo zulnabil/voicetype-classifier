@@ -28,7 +28,6 @@ const Predict = () => {
   const [resultText, setResultText] = useState("")
 
   useEffect(() => {
-    // navigator.mediaDevices.getUserMedia({audio: true})
     if (analyzer) {
       analyzer.start()
     }

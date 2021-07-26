@@ -18,11 +18,6 @@ export const menus = [
     path: "/predict",
     icon: <Icon>person_search</Icon>,
   },
-  {
-    name: "Train",
-    path: "/train",
-    icon: <Icon>model_training</Icon>,
-  },
 ]
 
 export const routes = [
