@@ -1,11 +1,25 @@
 import { memo, useEffect, useState, useRef } from "react"
+import { makeStyles } from "@material-ui/core/styles"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableContainer from "@material-ui/core/TableContainer"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import Paper from "@material-ui/core/Paper"
 import Meyda from "meyda"
 import KNN from "ml-knn"
 
 const LABEL_MAP = { alto: 0, bass: 1, sopran: 2, tenor: 3 }
 const RESULT_MAP = { 0: "Alto", 1: "Bass", 2: "Sopran", 3: "Tenor" }
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
+  },
+})
 
 function getMeanArray(arr) {
   let meanArr = arr[0].map((col, i) => {
@@ -15,6 +29,8 @@ function getMeanArray(arr) {
 }
 
 const Predict = () => {
+  const classes = useStyles()
+
   const [dataset, setDataset] = useState([])
   const [state, setState] = useState({
     context: null,
@@ -26,6 +42,7 @@ const Predict = () => {
   const [file, setFile] = useState(null)
   const streamFileRef = useRef(null)
   const [resultText, setResultText] = useState("")
+  const [resulltMfcc, setResultMfcc] = useState([])
 
   useEffect(() => {
     if (analyzer) {
@@ -75,6 +92,7 @@ const Predict = () => {
   const handleExtractFeature = async () => {
     setResultText("Sedang menganalisa...")
     setMfccTotal([])
+    setResultMfcc([])
     if (state.sourceStream)
       state.sourceStream.connect(state.context.destination)
     setAnalyzer(
@@ -94,6 +112,7 @@ const Predict = () => {
     analyzer.stop()
     let testingDataSource = await getMeanArray(mfccTotal)
     predict(testingDataSource)
+    setResultMfcc(testingDataSource)
     setMfccTotal([])
   }
 
@@ -112,11 +131,34 @@ const Predict = () => {
 
     const knn = new KNN(data, label)
     const result = knn.predict(dataTest)
-    console.log(result)
     setResultText(
       `Hasil identifikasi adalah suara ${getGenderByResult(result)}, tipenya "${
         RESULT_MAP[result]
       }"`
+    )
+  }
+
+  const renderMfccResult = () => {
+    if (!resulltMfcc.length) return
+    return (
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="Result MFCC">
+          <TableHead>
+            <TableRow>
+              {resulltMfcc.map((_, index) => (
+                <TableCell key={index}>mfcc{index}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              {resulltMfcc.map((mfcc) => (
+                <TableCell key={mfcc}>{mfcc.toFixed(3)}</TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     )
   }
 
@@ -147,6 +189,7 @@ const Predict = () => {
         <Typography variant="h6" gutterBottom>
           {resultText}
         </Typography>
+        {renderMfccResult()}
       </div>
     </div>
   )
