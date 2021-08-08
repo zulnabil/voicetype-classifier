@@ -97,6 +97,10 @@ const Predict = () => {
     setMfccTotal([])
   }
 
+  const getGenderByResult = (result) => {
+    return result === 1 || result === 3 ? "laki-laki" : "perempuan"
+  }
+
   const predict = (dataTest) => {
     const data = dataset.map((item) => {
       const tempItem = { ...item }
@@ -109,7 +113,11 @@ const Predict = () => {
     const knn = new KNN(data, label)
     const result = knn.predict(dataTest)
     console.log(result)
-    setResultText(`Jenis suara adalah "${RESULT_MAP[result]}"`)
+    setResultText(
+      `Hasil identifikasi adalah suara ${getGenderByResult(result)}, tipenya "${
+        RESULT_MAP[result]
+      }"`
+    )
   }
 
   return (
