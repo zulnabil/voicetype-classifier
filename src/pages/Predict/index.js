@@ -129,7 +129,7 @@ const Predict = () => {
     })
     const label = dataset.map((item) => LABEL_MAP[item.label])
 
-    const knn = new KNN(data, label)
+    const knn = new KNN(data, label, { k: 3 })
     const result = knn.predict(dataTest)
     setResultText(
       `Hasil identifikasi adalah suara ${getGenderByResult(result)}, tipenya "${
