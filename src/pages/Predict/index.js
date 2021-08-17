@@ -8,6 +8,7 @@ import TableCell from "@material-ui/core/TableCell"
 import TableContainer from "@material-ui/core/TableContainer"
 import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
+import TextField from "@material-ui/core/TextField"
 import Paper from "@material-ui/core/Paper"
 import Meyda from "meyda"
 import KNN from "ml-knn"
@@ -43,6 +44,8 @@ const Predict = () => {
   const streamFileRef = useRef(null)
   const [resultText, setResultText] = useState("")
   const [resulltMfcc, setResultMfcc] = useState([])
+
+  const [kValue, setKValue] = useState(5)
 
   useEffect(() => {
     if (analyzer) {
@@ -129,7 +132,7 @@ const Predict = () => {
     })
     const label = dataset.map((item) => LABEL_MAP[item.label])
 
-    const knn = new KNN(data, label, { k: 7 })
+    const knn = new KNN(data, label, { k: kValue })
     const result = knn.predict(dataTest)
     setResultText(
       `Hasil identifikasi adalah suara ${getGenderByResult(result)}, tipenya "${
@@ -173,11 +176,20 @@ const Predict = () => {
         style={{ display: "none" }}
       />
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <label htmlFor="contained-button-file">
-          <Button variant="contained" color="primary" component="span">
-            Upload
-          </Button>
-        </label>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <TextField
+            id="k-value"
+            label="K Value"
+            variant="outlined"
+            value={kValue}
+            onChange={(e) => setKValue(e.target.value)}
+          />
+          <label htmlFor="contained-button-file">
+            <Button variant="contained" color="primary" component="span">
+              Upload
+            </Button>
+          </label>
+        </div>
         <audio
           ref={streamFileRef}
           src={file}
